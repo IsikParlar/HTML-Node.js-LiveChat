@@ -1,0 +1,61 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="Access-Control-Allow-Origin" content="*">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.0/socket.io.js"></script>
+	<script src="https://code.jquery.com/jquery-3.5.0.js"> </script>
+	<script>
+	$(function(){
+		var data = [];
+		var div = "";
+		var ben = "";
+		
+		var socket = io('https://medipolvize2022mustafaisikparlar.glitch.me:443');
+		
+		socket.emit('baslat', data, function (id){
+			console.log(id);
+			ben = id;
+		});
+		
+		$("#gonder").click(function(){
+			var ad = $("#ad").val();
+			var tx = $("#yazi").val();
+			
+			socket.emit("mesaj", {id:ben, ad:ad, tx:tx});
+		});
+		
+		socket.on('sohbet', function(mesaj) {
+			if(mesaj.id == ben)
+			{
+				div = "user1";
+			}
+			else
+			{
+				div = "user2";
+			}
+			
+			$("#sohbetler").append('<div class="balon '+div+'">'+mesaj.ad+' / '+mesaj.tx+'</div> <div style="clear:both"></div>');
+			
+			console.log("sohbet: " + mesaj.id + " / " + mesaj.ad + " / " + mesaj.tx);
+		});
+	});
+	
+	</script>
+	<style>
+		.balon { margin-bottom:10px; padding:5px; width:75%; }
+		.user1 { border:1px solid #333; }
+		.user2 { border:1px solid red; float:right; }
+	</style>
+</head>
+
+<body>
+	<form>
+		Adınız: <input type="text" id="ad" name="yazi" value="Işık" />
+		Sohbet: <input type="text" id="yazi" name="yazi" value="Merhaba" />
+		<input type="button" id="gonder" value="Gönder" />
+	</form>
+<div id="sohbetler"></div>
+
+
+</body>
+</html>
